@@ -35,7 +35,14 @@ func main() {
 	variaLa := GeneticVariation(crossLa)
 	newLa := Combine(variaLa)
 	newLa.PrintListAnswer()
-
+	println("circulation start !!!!!!")
+	for i := 0; i < 100; i++ {
+		newLa = GetSursivalAnswers(newLa)
+		newLa = CrossoverOperation(newLa)
+		newLa = GeneticVariation(newLa)
+		newLa = Combine(newLa)
+		newLa.PrintListAnswer()
+	}
 	//bnum := utils.GetIndexBinaryNot("10101001",4)
 	//println(bnum)
 
@@ -47,7 +54,7 @@ func GetSursivalAnswers(la core.ListAnswer) core.ListAnswer {
 	sum := 0
 	percent := 0
 	var survivalAnswers core.ListAnswer
-	survivalAnswers.Generation = 1
+	survivalAnswers.Generation = la.Generation
 	for i, a := range la.AList {
 		if max < a.Y {
 			max = a.Y
@@ -73,7 +80,7 @@ func GetSursivalAnswers(la core.ListAnswer) core.ListAnswer {
 	breakFlag := 0
 	for {
 		rand := utils.RandomNum(100)
-		println("get random num : " + strconv.Itoa(rand))
+		//println("get random num : " + strconv.Itoa(rand))
 		for i := 0; i < len(la.AList); i++ {
 			if la.AList[i].RandomMin <= rand && rand < la.AList[i].RandomMax {
 				//pick it
@@ -114,15 +121,24 @@ func CrossoverOperation(la core.ListAnswer) core.ListAnswer {
 	//set the intersection position at random
 	randomPosi := utils.RandomNum(8)
 	fa, fb := utils.SwapString(firstList[0].Str, firstList[1].Str, randomPosi)
+	//to have 4 children
+	randomPosi_2 := utils.RandomNumExcept(8, randomPosi)
+	fc, fd := utils.SwapString(firstList[0].Str, firstList[1].Str, randomPosi_2)
+
 	randomPosi2 := utils.RandomNum(8)
 	sa, sb := utils.SwapString(secondList[0].Str, secondList[1].Str, randomPosi2)
-	newLa.AList = append(newLa.AList, core.Answer{Str: fa}, core.Answer{Str: fb}, core.Answer{Str: sa}, core.Answer{Str: sb})
+	//to have 4 children
+	randomPosi2_2 := utils.RandomNumExcept(8, randomPosi)
+	sc, sd := utils.SwapString(secondList[0].Str, secondList[1].Str, randomPosi2_2)
+
+	newLa.AList = append(newLa.AList, core.Answer{Str: fa}, core.Answer{Str: fb}, core.Answer{Str: fc},
+		core.Answer{Str: fd}, core.Answer{Str: sa}, core.Answer{Str: sb}, core.Answer{Str: sc}, core.Answer{Str: sd})
 	newLa.Generation = la.Generation + 1
 	return newLa
 }
 
 func GeneticVariation(la core.ListAnswer) core.ListAnswer {
-	variaAnswer := utils.RandomNum(4)
+	variaAnswer := utils.RandomNum(8)
 	variaIndex := utils.RandomNum(8)
 	println("before variation : " + la.AList[variaAnswer].Str)
 	la.AList[variaAnswer].Str = utils.GetIndexBinaryNot(la.AList[variaAnswer].Str, variaIndex+1)
